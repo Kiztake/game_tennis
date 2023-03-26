@@ -1,4 +1,5 @@
 from pygame import *
+from time import sleep
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, player_speed, width, height):
@@ -40,8 +41,8 @@ font = font.Font(None, 35)
 lose1 = font.render("Player 1 lose!!!", True, (180, 0, 0))
 lose2 = font.render("Player 2 lose!!!", True, (180, 0, 0))
 
-v_x = 3
-v_y = 2
+v_x = 4
+v_y = 3
 
 game = True
 finish = False
@@ -60,7 +61,11 @@ while game:
         racket1.update_l()
         racket1.reset()
 
-        racket2.update_r()
+        if v_x > 0:
+            if ball.rect.y >= racket2.rect.y and racket2.rect.y < win_height - 140:
+                racket2.rect.y += racket2.speed // 2
+            else:
+                racket2.rect.y -= racket2.speed // 2
         racket2.reset()
 
         ball.reset()
@@ -70,17 +75,20 @@ while game:
         if sprite.collide_rect(racket1, ball) or sprite.collide_rect(racket2, ball):
             v_x *= -1
 
-
         if ball.rect.y >= win_height - 50 or ball.rect.y <= 50:
             v_y *= -1
+
         if ball.rect.x < 0:
             finish = True
             window.blit(lose1, (200, 200))
         elif ball.rect.x >= win_width:
             finish = True
             window.blit(lose2, (200, 200))
-
-
-
+    else:
+        sleep(2)
+        finish = False
+        racket1 = Player("racket.png", 30, win_height//2, 4, 40, 120)
+        racket2 = Player("racket.png", 520, win_height//2, 4, 40, 120)
+        ball = GameSprite('tenis_ball.png', 200, win_height//2, 4, 50, 50)
     display.update()
     clock.tick(FPS)
